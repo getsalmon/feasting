@@ -1,0 +1,12 @@
+[project]
+name = "dataset_processing"
+version = "0.1.0"
+description = "Работа над датасетом и проверки"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "ipython>=9.7.0",
+    "jupyter>=1.1.1",
+    "pandas>=2.3.3",
+    "pyarrow>=22.0.0",
+]
