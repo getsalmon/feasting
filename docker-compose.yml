@@ -8,10 +8,49 @@ services:
     volumes:
       - clickhouse_data:/var/lib/clickhouse/
     environment:
-      CLICKHOUSE_DB: example 
-      CLICKHOUSE_USER: clickhouse 
-      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1 
+      CLICKHOUSE_DB: example
+      CLICKHOUSE_USER: clickhouse
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
       CLICKHOUSE_PASSWORD: clickhouse
+
+  kafka:
+    image: apache/kafka:latest
+    container_name: kafka
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+    environment:
+      # KRaft настройки
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+
+      # Listeners
+      KAFKA_LISTENERS: BANANA://0.0.0.0:29092,BANANA_LH://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: BANANA://kafka:29092,BANANA_LH://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: BANANA:PLAINTEXT,BANANA_LH:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_INTER_BROKER_LISTENER_NAME: BANANA
+
+      # Дополнительные настройки
+      KAFKA_NUM_PARTITIONS: 4
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    ports:
+      - "8080:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+      KAFKA_CLUSTERS_0_KAFKACONNECT_0_NAME: debezium
+      KAFKA_CLUSTERS_0_KAFKACONNECT_0_ADDRESS: http://kafka-connect:8083
 
   # minio:
   #   image: minio/minio
@@ -28,4 +67,5 @@ services:
   #   command: ["server", "/data", "--console-address", ":9001"]
 volumes:
   clickhouse_data:
+  kafka_data:
   # minio_data:
