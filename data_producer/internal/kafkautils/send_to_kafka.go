@@ -19,6 +19,14 @@ func CreateKafkaWriter(cfg *config.Config) *kafka.Writer {
 		Addr:     kafka.TCP(addr),
 		Topic:    cfg.Kafka.Topic,
 		Balancer: &kafka.Hash{},
+		Async: true,
+		Completion: func(messages []kafka.Message, err error) {
+			if err != nil {
+				// КРИТИЧНО: обработать ошибку
+				log.Printf("ERROR: Failed to send %d messages: %v", len(messages), err)
+				// TODO: добавить retry логику или dead letter queue
+			}
+		},
 	}
 }
 

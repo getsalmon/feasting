@@ -52,6 +52,18 @@ services:
       KAFKA_CLUSTERS_0_KAFKACONNECT_0_NAME: debezium
       KAFKA_CLUSTERS_0_KAFKACONNECT_0_ADDRESS: http://kafka-connect:8083
 
+  postgres:
+    image: postgres
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: sales
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql
+
   # minio:
   #   image: minio/minio
   #   container_name: minio
@@ -68,4 +80,5 @@ services:
 volumes:
   clickhouse_data:
   kafka_data:
+  pg_data:
   # minio_data:
