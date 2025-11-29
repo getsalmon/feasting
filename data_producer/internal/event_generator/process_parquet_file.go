@@ -17,7 +17,7 @@ type RowWithErr[T any] struct {
 }
 
 func (r *RowWithErr[T]) GetRecordID () uuid.UUID {
-	namespace := uuid.NameSpaceURL  // или свой
+	namespace := uuid.NameSpaceURL
 	rowID := fmt.Sprintf("%s-%d", r.Filename, r.RowNumber)
 	rowUUID := uuid.NewSHA1(namespace, []byte(rowID))
 	return rowUUID
